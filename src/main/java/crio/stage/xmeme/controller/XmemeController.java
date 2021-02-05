@@ -19,8 +19,8 @@ public class XmemeController {
     @Autowired
     MemeService memeService;
 
-    @PostMapping(value="/")
-    public ResponseEntity<IdDTO> addMeme(@RequestBody MemeDTO memeDTO){
+    @PostMapping(value = "/")
+    public ResponseEntity<IdDTO> addMeme(@RequestBody MemeDTO memeDTO) {
         Meme meme = new Meme();
         BeanUtils.copyProperties(memeDTO, meme);
         Meme memeCreated = memeService.save(meme);
@@ -30,14 +30,14 @@ public class XmemeController {
     }
 
     @GetMapping(value = "/")
-    public List<Meme> findAllMemes(){
+    public List<Meme> findAllMemes() {
         return memeService.findAllMemes();
     }
 
-    @GetMapping(value="/{id}")
-    public ResponseEntity<Optional<Meme>> findById(@PathVariable(value="id")Integer id){
+    @GetMapping(value = "/{id}")
+    public ResponseEntity<Optional<Meme>> findById(@PathVariable(value = "id") Integer id) {
         Optional<Meme> meme = memeService.findById(id);
-        if(meme.isEmpty()){
+        if (meme.isEmpty()) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
         MemeDTO memeDTO = new MemeDTO();

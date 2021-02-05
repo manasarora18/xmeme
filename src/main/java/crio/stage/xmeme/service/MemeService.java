@@ -7,6 +7,8 @@ import java.util.Optional;
 
 public interface MemeService {
     Meme save(Meme meme);
+
     List<Meme> findAllMemes();
+
     Optional<Meme> findById(Integer id);
 }
