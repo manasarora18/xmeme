@@ -26,7 +26,7 @@ public class XmemeController {
         Meme memeCreated = memeService.save(meme);
         IdDTO idDTO = new IdDTO();
         idDTO.setId(memeCreated.getId());
-        return new ResponseEntity<IdDTO>(idDTO, HttpStatus.CREATED);
+        return new ResponseEntity<>(idDTO, HttpStatus.CREATED);
     }
 
     @GetMapping(value = "/")

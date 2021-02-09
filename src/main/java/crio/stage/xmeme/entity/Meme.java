@@ -31,5 +31,4 @@ public class Meme {
 
     public Meme() {
     }
-
 }
