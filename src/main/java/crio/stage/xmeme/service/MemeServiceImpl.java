@@ -7,12 +7,15 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Optional;
+/*
+ * This class is for implementation of MicroService Architecture performing all the major DB Operations
+ * (saving, updating, getting data from Meme DB)
+ */
 
 @Service
 public class MemeServiceImpl implements MemeService {
     @Autowired
     MemeRepo memeRepo;
-
 
     @Override
     public Meme save(Meme meme) {
@@ -22,6 +25,11 @@ public class MemeServiceImpl implements MemeService {
     @Override
     public List<Meme> findAllMemes() {
         return (List<Meme>) memeRepo.findAll();
+    }
+
+    @Override
+    public void patchMeme(Optional<Meme> meme) {
+        memeRepo.save(meme.get());
     }
 
     @Override

@@ -5,6 +5,10 @@ import lombok.Setter;
 
 import javax.persistence.*;
 
+/*
+ * This class is for entity "Meme" that will be used in ORM Mapping as well as the object used for manipulating business logic.
+ */
+
 @Getter
 @Setter
 @Entity
