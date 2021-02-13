@@ -18,4 +18,6 @@ public interface MemeService {
     void patchMeme(Optional<Meme> meme);
 
     Optional<Meme> findById(Integer id);
+
+    boolean isMemePresent(Meme meme);
 }

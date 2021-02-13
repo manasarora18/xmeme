@@ -20,6 +20,7 @@ import java.util.Optional;
  */
 
 @RestController
+@CrossOrigin("*")
 @RequestMapping("/memes")
 public class XmemeController {
 
@@ -35,11 +36,21 @@ public class XmemeController {
     public ResponseEntity<IdDTO> addMeme(@RequestBody MemeDTO memeDTO) {
         Meme meme = new Meme();
         BeanUtils.copyProperties(memeDTO, meme);
-        Meme memeCreated = memeService.save(meme);
-        IdDTO idDTO = new IdDTO();
-        idDTO.setId(memeCreated.getId());
-        LOG.debug("POST mapping request received for adding a new meme to DB");
-        return new ResponseEntity<>(idDTO, HttpStatus.CREATED);
+        if (!memeService.isMemePresent(meme)) {
+            LOG.debug("POST mapping request received for adding a new meme to DB");
+            System.out.println("POST mapping request received for adding a new meme to DB");
+            try {
+                Meme memeCreated = memeService.save(meme);
+                IdDTO idDTO = new IdDTO();
+                idDTO.setId(memeCreated.getId());
+                return new ResponseEntity<>(idDTO, HttpStatus.CREATED);
+            } catch (Exception e) {
+                LOG.debug("POST Mapping could not proceed with DB");
+                return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+            }
+        } else {
+            return new ResponseEntity<>(HttpStatus.NOT_ACCEPTABLE);
+        }
     }
 
     /*
@@ -48,6 +59,7 @@ public class XmemeController {
     @GetMapping(value = "/")
     public List<Meme> findAllMemes() {
         LOG.debug("GET mapping request received for getting all memes from DB");
+        System.out.println("GET mapping request received for getting all memes from DB");
         return memeService.findAllMemes();
     }
 
@@ -56,14 +68,19 @@ public class XmemeController {
     */
     @GetMapping(value = "/{id}")
     public ResponseEntity<Optional<Meme>> findById(@PathVariable(value = "id") Integer id) {
-        Optional<Meme> meme = memeService.findById(id);
-        if (meme.isEmpty()) {
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        try {
+            Optional<Meme> meme = memeService.findById(id);
+            if (null == meme || meme.isEmpty()) {
+                return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+            }
+            MemeDTO memeDTO = new MemeDTO();
+            BeanUtils.copyProperties(meme, memeDTO);
+            System.out.println("GET mapping request received for getting a single meme content from DB with help of its id");
+            LOG.debug("GET mapping request received for getting a single meme content from DB with help of its id");
+            return new ResponseEntity<>(meme, HttpStatus.OK);
+        } catch (Exception e) {
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
-        MemeDTO memeDTO = new MemeDTO();
-        BeanUtils.copyProperties(meme, memeDTO);
-        LOG.debug("GET mapping request received for getting a single meme content from DB with help of its id");
-        return new ResponseEntity<>(meme, HttpStatus.FOUND);
     }
 
     /*
@@ -71,13 +88,20 @@ public class XmemeController {
     */
     @PatchMapping(value = "/{id}")
     public ResponseEntity<Optional<Meme>> updateId(@PathVariable(value = "id") Integer id, @RequestBody MemeDTO memeDTO) {
-        Optional<Meme> meme = memeService.findById(id);
-        if (meme.isEmpty()) {
-            return new ResponseEntity<>(HttpStatus.CONFLICT);
+        try {
+            Optional<Meme> meme = memeService.findById(id);
+            if (meme.isEmpty()) {
+                return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+            }
+            meme.get().setCaption(memeDTO.getCaption());
+            meme.get().setUrl(memeDTO.getUrl());
+            memeService.patchMeme(meme);
+            System.out.println("PATCH mapping request received for updating a meme in DB");
+            LOG.debug("PATCH mapping request received for updating a meme in DB");
+            return new ResponseEntity<>(HttpStatus.OK);
         }
-        BeanUtils.copyProperties(memeDTO, meme);
-        memeService.patchMeme(meme);
-        LOG.debug("PATCH mapping request received for updating a meme in DB");
-        return new ResponseEntity<>(HttpStatus.OK);
+        catch (Exception e){
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        }
     }
 }

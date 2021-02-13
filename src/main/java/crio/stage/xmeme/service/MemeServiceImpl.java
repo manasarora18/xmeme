@@ -3,6 +3,8 @@ package crio.stage.xmeme.service;
 import crio.stage.xmeme.entity.Meme;
 import crio.stage.xmeme.repository.MemeRepo;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Example;
+import org.springframework.data.domain.ExampleMatcher;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -35,5 +37,18 @@ public class MemeServiceImpl implements MemeService {
     @Override
     public Optional<Meme> findById(Integer id) {
         return memeRepo.findById(id);
+    }
+
+    @Override
+    public boolean isMemePresent(Meme meme) {
+        Meme checkMeme = new Meme();
+        checkMeme.setName(meme.getName());
+        checkMeme.setUrl(meme.getUrl());
+        checkMeme.setCaption(meme.getCaption());
+        ExampleMatcher exampleMatcher = ExampleMatcher.matching().withIgnorePaths("id");
+        Example<Meme> example = Example.of(checkMeme, exampleMatcher);
+        Iterable<Meme> memeList = memeRepo.findAll(example);
+        List<Meme> memes = (List<Meme>) memeList;
+        return !memes.isEmpty();
     }
 }
