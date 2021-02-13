@@ -20,7 +20,7 @@ import java.util.Optional;
  */
 
 @RestController
-@CrossOrigin("*")
+//@CrossOrigin("*")
 @RequestMapping("/memes")
 public class XmemeController {
 
