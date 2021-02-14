@@ -12,6 +12,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -41,7 +42,7 @@ public class XmemeController {
             try {
                 Meme memeCreated = memeService.save(meme);
                 IdDTO idDTO = new IdDTO();
-                idDTO.setId(memeCreated.getId());
+                idDTO.setId(memeCreated.getId().toString());
                 return new ResponseEntity<>(idDTO, HttpStatus.CREATED);
             } catch (Exception e) {
                 LOG.debug("POST Mapping could not proceed with DB");
@@ -56,11 +57,21 @@ public class XmemeController {
     Method exposed via mappings to get all memes
     */
     @GetMapping(value = "/memes")
-    public ResponseEntity<List<Meme>> findAllMemes() {
+    public ResponseEntity<List<MemeDTO>> findAllMemes() {
         try {
             LOG.debug("GET mapping request received for getting all memes from DB");
             System.out.println("GET mapping request received for getting all memes from DB");
-            return new ResponseEntity<>(memeService.findAllMemes(), HttpStatus.OK);
+            List<Meme> memeList = memeService.findAllMemes();
+            ArrayList<MemeDTO> memeDTOList = new ArrayList<MemeDTO>();
+            for (Meme meme : memeList) {
+                MemeDTO memeDTO = new MemeDTO();
+                memeDTO.setName(meme.getName());
+                memeDTO.setId(meme.getId().toString());
+                memeDTO.setCaption(meme.getCaption());
+                memeDTO.setUrl(meme.getUrl());
+                memeDTOList.add(memeDTO);
+            }
+            return new ResponseEntity<>(memeDTOList, HttpStatus.OK);
         } catch (Exception e) {
             LOG.debug("GET all Mapping could not proceed with DB");
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
@@ -70,18 +81,21 @@ public class XmemeController {
     /*
     Method exposed via mappings to get meme content by Id
     */
-    @GetMapping(value = "/memes/{id}")
-    public ResponseEntity<Optional<Meme>> findById(@PathVariable(value = "id") Integer id) {
+    @GetMapping(value = "/{id}")
+    public ResponseEntity<MemeDTO> findById(@PathVariable(value = "id") Integer id) {
         try {
             Optional<Meme> meme = memeService.findById(id);
             if (null == meme || meme.isEmpty()) {
                 return new ResponseEntity<>(HttpStatus.NOT_FOUND);
             }
             MemeDTO memeDTO = new MemeDTO();
-            BeanUtils.copyProperties(meme, memeDTO);
+            memeDTO.setId(meme.get().getId().toString());
+            memeDTO.setUrl(meme.get().getUrl());
+            memeDTO.setCaption(meme.get().getCaption());
+            memeDTO.setName(meme.get().getName());
             System.out.println("GET mapping request received for getting a single meme content from DB with help of its id");
             LOG.debug("GET mapping request received for getting a single meme content from DB with help of its id");
-            return new ResponseEntity<>(meme, HttpStatus.OK);
+            return new ResponseEntity<>(memeDTO, HttpStatus.OK);
         } catch (Exception e) {
             LOG.debug("GET by ID Mapping could not proceed with DB");
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
@@ -91,7 +105,7 @@ public class XmemeController {
     /*
     Method exposed via mappings to update a meme already present in DB
     */
-    @PatchMapping(value = "/memes/{id}")
+    @PatchMapping(value = "/{id}")
     public ResponseEntity<Optional<Meme>> updateId(@PathVariable(value = "id") Integer id, @RequestBody MemeDTO memeDTO) {
         try {
             Optional<Meme> meme = memeService.findById(id);

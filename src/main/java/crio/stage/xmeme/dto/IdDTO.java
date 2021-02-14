@@ -11,5 +11,5 @@ import lombok.Setter;
 @Getter
 @Setter
 public class IdDTO {
-    Integer id;
+    String id;
 }
