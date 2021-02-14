@@ -49,7 +49,7 @@ public class XmemeController {
                 return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
             }
         } else {
-            return new ResponseEntity<>(HttpStatus.NOT_ACCEPTABLE);
+            return new ResponseEntity<>(HttpStatus.CONFLICT);
         }
     }
 
