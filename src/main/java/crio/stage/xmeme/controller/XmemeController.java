@@ -43,7 +43,7 @@ public class XmemeController {
                 Meme memeCreated = memeService.save(meme);
                 IdDTO idDTO = new IdDTO();
                 idDTO.setId(memeCreated.getId().toString());
-                return new ResponseEntity<>(idDTO, HttpStatus.CREATED);
+                return new ResponseEntity<>(idDTO, HttpStatus.OK);
             } catch (Exception e) {
                 LOG.debug("POST Mapping could not proceed with DB");
                 return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
