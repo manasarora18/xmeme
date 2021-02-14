@@ -3,8 +3,7 @@ package crio.stage.xmeme.service;
 import crio.stage.xmeme.entity.Meme;
 import crio.stage.xmeme.repository.MemeRepo;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Example;
-import org.springframework.data.domain.ExampleMatcher;
+import org.springframework.data.domain.*;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -26,7 +25,8 @@ public class MemeServiceImpl implements MemeService {
 
     @Override
     public List<Meme> findAllMemes() {
-        return (List<Meme>) memeRepo.findAll();
+        Page<Meme> memePage = memeRepo.findAll(PageRequest.of(0, 100, Sort.by(Sort.Direction.DESC, "id")));
+        return memePage.getContent();
     }
 
     @Override

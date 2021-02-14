@@ -57,10 +57,15 @@ public class XmemeController {
     Method exposed via mappings to get all memes
     */
     @GetMapping(value = "/")
-    public List<Meme> findAllMemes() {
-        LOG.debug("GET mapping request received for getting all memes from DB");
-        System.out.println("GET mapping request received for getting all memes from DB");
-        return memeService.findAllMemes();
+    public ResponseEntity<List<Meme>> findAllMemes() {
+        try {
+            LOG.debug("GET mapping request received for getting all memes from DB");
+            System.out.println("GET mapping request received for getting all memes from DB");
+            return new ResponseEntity<>(memeService.findAllMemes(), HttpStatus.OK);
+        } catch (Exception e) {
+            LOG.debug("GET all Mapping could not proceed with DB");
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        }
     }
 
     /*
@@ -79,6 +84,7 @@ public class XmemeController {
             LOG.debug("GET mapping request received for getting a single meme content from DB with help of its id");
             return new ResponseEntity<>(meme, HttpStatus.OK);
         } catch (Exception e) {
+            LOG.debug("GET by ID Mapping could not proceed with DB");
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
     }
@@ -99,8 +105,8 @@ public class XmemeController {
             System.out.println("PATCH mapping request received for updating a meme in DB");
             LOG.debug("PATCH mapping request received for updating a meme in DB");
             return new ResponseEntity<>(HttpStatus.OK);
-        }
-        catch (Exception e){
+        } catch (Exception e) {
+            LOG.debug("PATCH Mapping could not proceed with DB");
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
     }
