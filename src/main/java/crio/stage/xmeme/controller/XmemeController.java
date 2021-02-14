@@ -21,7 +21,6 @@ import java.util.Optional;
 
 @RestController
 @CrossOrigin("*")
-@RequestMapping("/memes")
 public class XmemeController {
 
     public final Logger LOG = LoggerFactory.getLogger(this.getClass());
@@ -32,7 +31,7 @@ public class XmemeController {
     /*
     Method exposed via mappings to add new memes
      */
-    @PostMapping(value = "/")
+    @PostMapping(value = "/memes")
     public ResponseEntity<IdDTO> addMeme(@RequestBody MemeDTO memeDTO) {
         Meme meme = new Meme();
         BeanUtils.copyProperties(memeDTO, meme);
@@ -56,7 +55,7 @@ public class XmemeController {
     /*
     Method exposed via mappings to get all memes
     */
-    @GetMapping(value = "/")
+    @GetMapping(value = "/memes")
     public ResponseEntity<List<Meme>> findAllMemes() {
         try {
             LOG.debug("GET mapping request received for getting all memes from DB");
@@ -71,7 +70,7 @@ public class XmemeController {
     /*
     Method exposed via mappings to get meme content by Id
     */
-    @GetMapping(value = "/{id}")
+    @GetMapping(value = "/memes/{id}")
     public ResponseEntity<Optional<Meme>> findById(@PathVariable(value = "id") Integer id) {
         try {
             Optional<Meme> meme = memeService.findById(id);
@@ -92,7 +91,7 @@ public class XmemeController {
     /*
     Method exposed via mappings to update a meme already present in DB
     */
-    @PatchMapping(value = "/{id}")
+    @PatchMapping(value = "/memes/{id}")
     public ResponseEntity<Optional<Meme>> updateId(@PathVariable(value = "id") Integer id, @RequestBody MemeDTO memeDTO) {
         try {
             Optional<Meme> meme = memeService.findById(id);
